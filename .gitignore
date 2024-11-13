@@ -6,3 +6,5 @@ __pycache__
 *.7z.*
 .DS_Store
 .ruff_cache
+.vscode
+.pytest_cache
