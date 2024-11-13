@@ -1,0 +1,20 @@
+version: "3"
+
+services:
+  imple-image-upload-api:
+    image: simple-image-upload-api:latest
+    hostname: simple-image-upload-api
+    container_name: simple-image-upload-api
+    restart: always
+    ports:
+      - "8000:8000"
+
+    env_file:
+      - .env
+
+    healthcheck:
+      test: []
+      interval: 10m
+      timeout: 30s
+      retries: 3
+      start_period: 10m

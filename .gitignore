@@ -1,0 +1,8 @@
+.venv
+.lprof
+__pycache__
+.env
+.tar
+*.7z.*
+.DS_Store
+.ruff_cache

@@ -1,0 +1,47 @@
+[tool.poetry]
+name = "simple-image-upload-api"
+version = "0.1.0"
+description = ""
+authors = ["mitoconcrete <xogns98@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.115.5"
+sqlmodel = "^0.0.22"
+boto3 = "^1.35.59"
+uvicorn = "^0.32.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.3"
+ruff = "^0.7.3"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+target-version = "py312"
+line-length = 120
+exclude = ["dist", "build", "venv", "env", ".venv", ".env", ".git", ".pytest_cache", ".vscode", ".idea", "__pycache__"]
+
+[tool.ruff.lint]
+# https://docs.astral.sh/ruff/rules/
+# select Default values: ["E4", "E7", "E9", "F"]
+select = ["E4", "E7", "E9", "F", "T201", "I"]
+
+[tool.ruff.format]
+quote-style = "single"
+
+[tool.coverage.run]
+omit = [
+    # python
+    "*/__init__.py",
+    # tests
+    "*/tests/*.py",
+    "*/tests.py",
+    "*/test_*.py",
+]
+
+[tool.pytest.ini_options]
+pythonpath = "."
