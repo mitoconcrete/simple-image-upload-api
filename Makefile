@@ -1,15 +1,14 @@
-all: test lint build run
+all: test ruff build run
 
 test:
-    poetry run pytest
+	poetry run pytest
 
-lint:
-    poetry run ruff format --preview
-    poetry run ruff lint
+ruff:
+	poetry run ruff check . --fix
+	poetry run ruff format --preview
 
 build:
-    docker build -t simple-image-upload-api:latest .
+	docker build -t simple-image-upload-api:latest .
 
 run:
-    docker-compose up -d
-
+	docker-compose up -d
