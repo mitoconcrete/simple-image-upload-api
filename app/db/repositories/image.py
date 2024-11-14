@@ -1,6 +1,5 @@
-# Image 레포지토리
+from app.db.models.image import Image
 from app.db.repositories.base import BaseRepository
 
-
-class ImageRepository(BaseRepository):
+class ImageRepository(BaseRepository[Image]):
     pass
