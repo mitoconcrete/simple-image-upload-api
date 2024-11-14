@@ -29,5 +29,5 @@ def delete_test_image(image_path: str):
 # 테스트 버킷 삭제
 def delete_test_bucket(bucket_name: str):
     s3_uploader = S3Uploader()
-    s3_uploader._delete_bucket(bucket_name)
+    s3_uploader.delete_bucket(bucket_name)
     logging.info(f'{bucket_name} is deleted')

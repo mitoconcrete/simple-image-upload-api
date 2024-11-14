@@ -22,15 +22,15 @@ class TestS3Uploader:
         delete_test_bucket(bucket_name)
 
     def test_create_bucket(self, s3_uploader : S3Uploader, bucket_name : str):
-        s3_uploader._create_bucket(bucket_name)
+        s3_uploader.create_bucket(bucket_name)
 
         assert s3_uploader._has_bucket(bucket_name) == True
     
     def test_delete_bucket(self, s3_uploader : S3Uploader):
         delete_bucket_name = 'th.kim-delete-bucket'
 
-        s3_uploader._create_bucket(delete_bucket_name)
-        s3_uploader._delete_bucket(delete_bucket_name)
+        s3_uploader.create_bucket(delete_bucket_name)
+        s3_uploader.delete_bucket(delete_bucket_name)
 
         assert s3_uploader._has_bucket(delete_bucket_name) == False
 

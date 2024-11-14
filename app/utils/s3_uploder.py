@@ -25,7 +25,7 @@ class S3Uploader:
                 return False
             raise e
 
-    def _create_bucket(self, bucket_name: str) -> None:
+    def create_bucket(self, bucket_name: str) -> None:
         # check existing bucket name
         if self._has_bucket(bucket_name):
             logging.info(f'{bucket_name} already exists')
@@ -36,7 +36,7 @@ class S3Uploader:
         logging.info(f'{bucket_name} is created')
         return bucket_name
 
-    def _delete_bucket(self, bucket_name: str) -> None:
+    def delete_bucket(self, bucket_name: str) -> None:
         self.s3.delete_bucket(Bucket=bucket_name)
         logging.info(f'{bucket_name} is deleted')
 
