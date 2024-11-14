@@ -4,7 +4,12 @@ import pytest
 from PIL import Image
 
 from app.tests.helper import create_test_image, create_test_svg, create_test_text, delete_test_image, delete_test_text
-from app.utils.image_tool import _image_to_svg, _svg_optimizer, basic_image_preprocessor, is_image_type_jpg_or_png
+from app.utils.image_tool import (
+    _image_to_svg,
+    basic_image_preprocessor,
+    get_image_size,
+    is_image_type_jpg_or_png,
+)
 
 
 class TestImageTools:
@@ -75,8 +80,8 @@ class TestImageTools:
             svg_image = _image_to_svg(image_data)
             assert not is_image_type_jpg_or_png(svg_image)
 
-    def test_svg_optimizer(self):
-        with open('app/tests/utils/test_image.svg', 'rb') as f:
+    def test_image_size_checker(self):
+        with open('app/tests/utils/test_image.jpg', 'rb') as f:
             image_data = f.read()
-            optimized_image = _svg_optimizer(image_data)
-            assert optimized_image is not None
+            image_size = get_image_size(image_data)
+            assert image_size < 5 * 1024 * 1024

@@ -33,6 +33,7 @@ class TestS3Uploader:
         s3_uploader.delete_bucket(delete_bucket_name)
 
         assert not s3_uploader._has_bucket(delete_bucket_name)
+
     def test_upload_image(self, s3_uploader: S3Uploader, bucket_name: str):
         image_key = 'test_image.jpg'
         with open(f'app/tests/utils/{image_key}', 'rb') as f:

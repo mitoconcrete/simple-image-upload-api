@@ -126,3 +126,7 @@ def process_image_to_svg(image: bytes) -> bytes:
     svg_image = _image_to_svg(image)
     optimized_svg = _svg_optimizer(svg_image)
     return optimized_svg
+
+
+def get_image_size(image: bytes):
+    return len(image)
