@@ -37,6 +37,11 @@ class S3Uploader:
         return bucket_name
 
     def delete_bucket(self, bucket_name: str) -> None:
+        response = self.s3.list_objects_v2(Bucket=bucket_name)
+        if 'Contents' in response:
+            for obj in response['Contents']:
+                self.s3.delete_object(Bucket=bucket_name, Key=obj['Key'])
+
         self.s3.delete_bucket(Bucket=bucket_name)
         logging.info(f'{bucket_name} is deleted')
 
