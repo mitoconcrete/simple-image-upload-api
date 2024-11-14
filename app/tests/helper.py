@@ -1,9 +1,9 @@
 import logging
 import os
+
 from PIL import Image
 
 from app.utils.s3_uploder import S3Uploader
-
 
 
 # 테스트 이미지 파일(jpg, png) 생성
@@ -21,9 +21,20 @@ def create_test_svg(svg_path: str):
         f.write(svg)
 
 
+# 테스트 텍스트 파일 생성
+def create_test_text(text_path: str):
+    text = 'test text'
+    with open(text_path, 'w') as f:
+        f.write(text)
+
+
 # 테스트 이미지 파일 삭제
 def delete_test_image(image_path: str):
     os.remove(image_path)
+
+
+def delete_test_text(text_path: str):
+    os.remove(text_path)
 
 
 # 테스트 버킷 삭제

@@ -1,13 +1,15 @@
 from io import BytesIO, StringIO
+
 import cv2
 import numpy as np
-from scour import scour
-from PIL import Image, ImageFile
 import svgwrite
+from PIL import Image, ImageFile
+from scour import scour
 
 
 def _resize_image(image: ImageFile.ImageFile, width, height) -> Image:
     return image.resize((max(width, 100), max(height, 100)))
+
 
 # 이미지 타입이 jpg, png 인지 확인하는 함수를 작성합니다.
 def is_image_type_jpg_or_png(image: bytes) -> bool:
@@ -16,7 +18,7 @@ def is_image_type_jpg_or_png(image: bytes) -> bool:
         if image_type in ['JPEG', 'PNG']:
             return True
         return False
-    except Exception as e:
+    except Exception:
         return False
 
 
@@ -27,10 +29,10 @@ def basic_image_preprocessor(image: bytes) -> bytes:
     converted = Image.open(BytesIO(image))
     # 이미지 크기 조정
     resized = _resize_image(converted, converted.width // 2, converted.height // 2)
-    
+
     # 흑백 필터 적용
     grayscale = resized.convert('L')
-    
+
     # 이미지를 바이트로 변환
     output = BytesIO()
     grayscale.save(output, converted.format)
@@ -65,6 +67,7 @@ def _svg_optimizer(image: bytes) -> bytes:
 
     return optimized_svg_bytes
 
+
 def _image_to_svg(image: bytes) -> bytes:
     """
     byte 형식의 이미지를 SVG로 변환합니다.
@@ -96,7 +99,7 @@ def _image_to_svg(image: bytes) -> bytes:
         for contour in contours:
             # 경계의 각 점을 추출하여 정수로 변환
             points = [(int(point[0][0]), int(point[0][1])) for point in contour]
-            
+
             if points:
                 # 경계가 미세하게 닫히지 않았으면 점들을 이어서 닫아줌
                 if cv2.contourArea(contour) != cv2.contourArea(max_contour):  # 면적 기준으로 비교
@@ -114,6 +117,7 @@ def _image_to_svg(image: bytes) -> bytes:
     output_bytes = StringIO()
     dwg.write(output_bytes)
     return output_bytes.getvalue().encode('utf-8')
+
 
 def process_image_to_svg(image: bytes) -> bytes:
     """

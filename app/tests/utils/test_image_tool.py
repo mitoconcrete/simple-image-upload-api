@@ -1,10 +1,11 @@
-import pytest
-
-from PIL import Image
 from io import BytesIO
 
-from app.utils.image_tool import basic_image_preprocessor, is_image_type_jpg_or_png, _svg_optimizer, _image_to_svg
+import pytest
+from PIL import Image
+
 from app.tests.helper import create_test_image, create_test_svg, create_test_text, delete_test_image, delete_test_text
+from app.utils.image_tool import _image_to_svg, _svg_optimizer, basic_image_preprocessor, is_image_type_jpg_or_png
+
 
 class TestImageTools:
     @pytest.fixture(scope='class', autouse=True)
@@ -24,19 +25,19 @@ class TestImageTools:
     def test_image_type_checker(self):
         with open('app/tests/utils/test_image.jpg', 'rb') as f:
             image_data = f.read()
-            assert is_image_type_jpg_or_png(image_data) == True
+            assert is_image_type_jpg_or_png(image_data)
 
         with open('app/tests/utils/test_image.png', 'rb') as f:
             image_data = f.read()
-            assert is_image_type_jpg_or_png(image_data) == True
+            assert is_image_type_jpg_or_png(image_data)
 
         with open('app/tests/utils/test_image.svg', 'rb') as f:
             image_data = f.read()
-            assert is_image_type_jpg_or_png(image_data) == False
+            assert not is_image_type_jpg_or_png(image_data)
 
         with open('app/tests/utils/test_text.txt', 'rb') as f:
             text_data = f.read()
-            assert is_image_type_jpg_or_png(text_data) == False
+            assert not is_image_type_jpg_or_png(text_data)
 
     def test_jpg_image_preprocess(self):
         with open('app/tests/utils/test_image.jpg', 'rb') as f:
@@ -44,12 +45,11 @@ class TestImageTools:
             # 이미지 데이터의 사이즈를 체크하고, 가로 세로가 // 2로 리사이즈 되었는지 확인합니다.
             width, height = Image.open(BytesIO(image_data)).size
             processed_image = basic_image_preprocessor(image_data)
-             
+
             after_width, after_height = Image.open(BytesIO(processed_image)).size
             assert processed_image is not None
             assert max(width // 2, 100) == after_width
             assert max(height // 2, 100) == after_height
-
 
     def test_png_image_preprocess(self):
         with open('app/tests/utils/test_image.png', 'rb') as f:
@@ -57,7 +57,7 @@ class TestImageTools:
             # 이미지 데이터의 사이즈를 체크하고, 가로 세로가 // 2로 리사이즈 되었는지 확인합니다.
             width, height = Image.open(BytesIO(image_data)).size
             processed_image = basic_image_preprocessor(image_data)
-             
+
             after_width, after_height = Image.open(BytesIO(processed_image)).size
             assert processed_image is not None
             assert max(width // 2, 100) == after_width
@@ -67,17 +67,16 @@ class TestImageTools:
         with open('app/tests/utils/test_image.jpg', 'rb') as f:
             image_data = f.read()
             svg_image = _image_to_svg(image_data)
-            assert is_image_type_jpg_or_png(svg_image) == False
-    
+            assert not is_image_type_jpg_or_png(svg_image)
+
     def test_png_image_to_svg(self):
         with open('app/tests/utils/test_image.png', 'rb') as f:
             image_data = f.read()
             svg_image = _image_to_svg(image_data)
-            assert is_image_type_jpg_or_png(svg_image) == False
+            assert not is_image_type_jpg_or_png(svg_image)
 
     def test_svg_optimizer(self):
         with open('app/tests/utils/test_image.svg', 'rb') as f:
             image_data = f.read()
             optimized_image = _svg_optimizer(image_data)
             assert optimized_image is not None
-

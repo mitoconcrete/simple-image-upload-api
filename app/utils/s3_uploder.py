@@ -1,6 +1,7 @@
 import logging
 
 import boto3
+
 from app.configs.setting import setting
 
 
@@ -8,14 +9,14 @@ class S3Uploader:
     def __init__(self):
         self.s3 = boto3.client(
             's3',
-            aws_access_key_id=setting.AWS_ACCESS_KEY_ID, 
+            aws_access_key_id=setting.AWS_ACCESS_KEY_ID,
             aws_secret_access_key=setting.AWS_SECRET_ACCESS_KEY,
-            region_name=setting.AWS_DEFAULT_REGION
+            region_name=setting.AWS_DEFAULT_REGION,
         )
 
     def _has_bucket(self, bucket_name: str) -> bool:
         return any([bucket['Name'] == bucket_name for bucket in self.s3.list_buckets()['Buckets']])
-    
+
     def _has_file(self, bucket_name: str, file_name: str) -> bool:
         try:
             self.s3.head_object(Bucket=bucket_name, Key=file_name)
