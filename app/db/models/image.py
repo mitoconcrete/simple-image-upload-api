@@ -10,7 +10,9 @@ class Image(TimeStampedModel):
     __tablename__ = 'image'
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    label = Column(String, nullable=False)
+    label = Column(String, nullable=True)
     url = Column(String, nullable=False)
 
-    svg_image = relationship('SVGImage', back_populates='image', cascade='all, delete-orphan')
+    svg = relationship('SVG', back_populates='image', cascade='all, delete-orphan')
+    processing_log = relationship("ProcessingLog", back_populates="image", lazy='selectin', cascade="all, delete-orphan")
+

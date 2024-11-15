@@ -1,6 +1,7 @@
 from abc import ABC
 from typing import Generic, List, Optional, Type, TypeVar
 
+from sqlalchemy import UUID
 from sqlalchemy.orm import sessionmaker
 
 T = TypeVar('T')
@@ -10,12 +11,13 @@ class BaseRepository(ABC, Generic[T]):
     def __init__(self, session_factory: sessionmaker):
         self.session_factory = session_factory
 
-    def add(self, entity: T) -> None:
+    def add(self, entity: T) -> UUID:
         with self.session_factory() as session:
             session.add(entity)
             session.commit()
+            return entity.id
 
-    def get(self, entity_class: Type[T], entity_id: int | str) -> Optional[T]:
+    def get(self, entity_class: Type[T], entity_id: str) -> Optional[T]:
         with self.session_factory() as session:
             return session.query(entity_class).get(entity_id)
 

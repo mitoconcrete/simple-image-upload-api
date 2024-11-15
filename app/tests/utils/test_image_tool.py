@@ -71,14 +71,14 @@ class TestImageTools:
     def test_jpg_image_to_svg(self):
         with open('app/tests/utils/test_image.jpg', 'rb') as f:
             image_data = f.read()
-            svg_image = _image_to_svg(image_data)
-            assert not is_image_type_jpg_or_png(svg_image)
+            svg = _image_to_svg(image_data)
+            assert not is_image_type_jpg_or_png(svg)
 
     def test_png_image_to_svg(self):
         with open('app/tests/utils/test_image.png', 'rb') as f:
             image_data = f.read()
-            svg_image = _image_to_svg(image_data)
-            assert not is_image_type_jpg_or_png(svg_image)
+            svg = _image_to_svg(image_data)
+            assert not is_image_type_jpg_or_png(svg)
 
     def test_image_size_checker(self):
         with open('app/tests/utils/test_image.jpg', 'rb') as f:

@@ -2,8 +2,8 @@ import uuid
 
 import pytest
 
-from app.db.models import Image, ProcessingLog, SVGImage
-from app.db.repositories import image_repository, processing_log_repository, svg_image_repository
+from app.db.models import Image, ProcessingLog, SVG
+from app.db.repositories import image_repository, processing_log_repository, svg_repository
 
 
 class TestRepository:
@@ -11,66 +11,56 @@ class TestRepository:
     @pytest.fixture(autouse=True)
     def run_around_tests(self):
         image_repository.delete_all(Image)
-        svg_image_repository.delete_all(SVGImage)
+        svg_repository.delete_all(SVG)
         processing_log_repository.delete_all(ProcessingLog)
         yield
         image_repository.delete_all(Image)
-        svg_image_repository.delete_all(SVGImage)
+        svg_repository.delete_all(SVG)
         processing_log_repository.delete_all(ProcessingLog)
 
     def test_create_image(self):
-        id = uuid.uuid4()
-        simple_image = Image(id=id, label='test', url='test')
-        image_repository.add(simple_image)
-        image = image_repository.get(Image, id)
+        image = Image(label='test', url='test')
+        image_id = image_repository.add(image)
 
-        assert image.label == 'test'
-        assert image.url == 'test'
+        assert image_id is not None
 
-    def test_create_svg_image(self):
-        image_id = uuid.uuid4()
-        svg_image_id = uuid.uuid4()
+    def test_create_svg(self):
+        image = Image(label='test', url='test')
+        svg = SVG(url='test2')
 
-        image = Image(id=image_id, label='test', url='test')
-        image_repository.add(image)
+        image.svg.append(svg)
 
-        svg_image = SVGImage(id=svg_image_id, original_id=image_id, url='test2')
-        svg_image_repository.add(svg_image)
+        image_id = image_repository.add(image)
+        svg_id = svg_repository.add(svg)
 
-        svg_image = svg_image_repository.get(SVGImage, svg_image_id)
-
-        assert svg_image.image.id == image_id
-        assert svg_image.id == svg_image_id
-        assert svg_image.url == 'test2'
-        assert svg_image.original_id == image_id
+        svg = svg_repository.get(SVG, svg_id)
+        assert svg.image.id == image_id
+        assert svg.id == svg_id
+        assert svg.url == 'test2'
+        assert svg.original_id == image_id
 
     def test_create_processing_log(self):
-        image_id = uuid.uuid4()
-        svg_image_id = uuid.uuid4()
-        processing_log_id = uuid.uuid4()
-
-        image = Image(id=image_id, label='test', url='test')
-        image_repository.add(image)
-
-        svg_image = SVGImage(id=svg_image_id, original_id=image_id, url='test2')
-        svg_image_repository.add(svg_image)
-
+        image = Image(label='test', url='test')
         processing_log = ProcessingLog(
-            id=processing_log_id, image_id=svg_image_id, status='processing', description='test'
+            status='processing', description='test'
         )
-        processing_log_repository.add(processing_log)
+
+        image.processing_log.append(processing_log)
+
+        image_id = image_repository.add(image)
+        processing_log_id = processing_log_repository.add(processing_log)
 
         processing_log = processing_log_repository.get(ProcessingLog, processing_log_id)
 
-        assert processing_log.image_id == svg_image_id
+        assert processing_log.original_id == image_id
         assert processing_log.id == processing_log_id
         assert processing_log.status == 'processing'
         assert processing_log.description == 'test'
 
     def test_list_images(self):
-        image_id = uuid.uuid4()
-        image = Image(id=image_id, label='test', url='test')
-        image2 = Image(id=uuid.uuid4(), label='test2', url='test2')
+        image = Image(label='test', url='test')
+        image2 = Image(label='test2', url='test2')
+
         image_repository.add(image)
         image_repository.add(image2)
 
@@ -81,52 +71,30 @@ class TestRepository:
         assert images[1].label == 'test2'
         assert images[1].url == 'test2'
 
-    def test_list_svg_images(self):
-        image_id = uuid.uuid4()
-        svg_image_id = uuid.uuid4()
-
-        image = Image(id=image_id, label='test', url='test')
-        image_repository.add(image)
-
-        svg_image = SVGImage(id=svg_image_id, original_id=image_id, url='test2')
-        svg_image2 = SVGImage(id=uuid.uuid4(), original_id=image_id, url='test3')
-        svg_image_repository.add(svg_image)
-        svg_image_repository.add(svg_image2)
-
-        svg_images = svg_image_repository.list(SVGImage)
-        assert len(svg_images) == 2
-        assert svg_images[0].url == 'test2'
-        assert svg_images[1].url == 'test3'
-
     def test_list_processing_logs(self):
-        image_id = uuid.uuid4()
-        svg_image_id = uuid.uuid4()
-        processing_log_id = uuid.uuid4()
-
-        image = Image(id=image_id, label='test', url='test')
-        image_repository.add(image)
-
-        svg_image = SVGImage(id=svg_image_id, original_id=image_id, url='test2')
-        svg_image_repository.add(svg_image)
-
+        image = Image(label='test', url='test')
         processing_log = ProcessingLog(
-            id=processing_log_id, image_id=svg_image_id, status='processing', description='test'
+            status='processing', description='test'
         )
         processing_log2 = ProcessingLog(
-            id=uuid.uuid4(), image_id=svg_image_id, status='processing', description='test2'
+            status='processing', description='test2'
         )
+
+        image.processing_log.append(processing_log)
+        image.processing_log.append(processing_log2)
+
+        image_repository.add(image)
         processing_log_repository.add(processing_log)
         processing_log_repository.add(processing_log2)
 
-        processing_logs = svg_image_repository.get_processing_logs(SVGImage, svg_image_id)
+        processing_logs = image_repository.get_processing_logs(Image, image.id)
         assert len(processing_logs) == 2
         assert processing_logs[0].description == 'test'
         assert processing_logs[1].description == 'test2'
 
     def test_update_image(self):
-        image_id = uuid.uuid4()
-        image = Image(id=image_id, label='test', url='test')
-        image_repository.add(image)
+        image = Image(label='test', url='test')
+        image_id = image_repository.add(image)
 
         image.label = 'test2'
         image.url = 'test3'
@@ -136,38 +104,31 @@ class TestRepository:
         assert image.label == 'test2'
         assert image.url == 'test3'
 
-    def test_update_svg_image(self):
-        image_id = uuid.uuid4()
-        svg_image_id = uuid.uuid4()
-
-        image = Image(id=image_id, label='test', url='test')
+    def test_update_svg(self):
+        image = Image(label='test', url='test')
+        svg = SVG(url='test2')
+        
+        image.svg.append(svg)
+        
         image_repository.add(image)
+        svg_id = svg_repository.add(svg)
 
-        svg_image = SVGImage(id=svg_image_id, original_id=image_id, url='test2')
-        svg_image_repository.add(svg_image)
+        svg.url = 'test3'
+        svg_repository.update(svg)
 
-        svg_image.url = 'test3'
-        svg_image_repository.update(svg_image)
-
-        svg_image = svg_image_repository.get(SVGImage, svg_image_id)
-        assert svg_image.url == 'test3'
+        svg = svg_repository.get(SVG, svg_id)
+        assert svg.url == 'test3'
 
     def test_update_processing_log(self):
-        image_id = uuid.uuid4()
-        svg_image_id = uuid.uuid4()
-        processing_log_id = uuid.uuid4()
-
-        image = Image(id=image_id, label='test', url='test')
-        image_repository.add(image)
-
-        svg_image = SVGImage(id=svg_image_id, original_id=image_id, url='test2')
-        svg_image_repository.add(svg_image)
-
+        image = Image(label='test', url='test')
         processing_log = ProcessingLog(
-            id=processing_log_id, image_id=svg_image_id, status='processing', description='test'
+            status='processing', description='test'
         )
-        processing_log_repository.add(processing_log)
 
+        image.processing_log.append(processing_log)
+
+        image_repository.add(image)
+        processing_log_id = processing_log_repository.add(processing_log)
         processing_log.status = 'done'
         processing_log_repository.update(processing_log)
 
@@ -175,72 +136,56 @@ class TestRepository:
         assert processing_log.status == 'done'
 
     def test_delete_image(self):
-        image_id = uuid.uuid4()
-        image = Image(id=image_id, label='test', url='test')
-        image_repository.add(image)
+        image = Image(label='test', url='test')
 
+        image_id = image_repository.add(image)
+        
         image_repository.delete(image)
+        
         image = image_repository.get(Image, image_id)
         assert image is None
 
-    def test_delete_svg_image(self):
-        image_id = uuid.uuid4()
-        svg_image_id = uuid.uuid4()
-
-        image = Image(id=image_id, label='test', url='test')
+    def test_delete_svg(self):
+        image = Image(label='test', url='test')
+        svg = SVG(url='test2')
+        
+        image.svg.append(svg)
+         
         image_repository.add(image)
+        svg_id = svg_repository.add(svg)
 
-        svg_image = SVGImage(id=svg_image_id, original_id=image_id, url='test2')
-        svg_image_repository.add(svg_image)
+        svg_repository.delete(svg)
 
-        svg_image_repository.delete(svg_image)
-        svg_image = svg_image_repository.get(SVGImage, svg_image_id)
-        assert svg_image is None
+        svg = svg_repository.get(SVG, svg_id)
+        assert svg is None
 
     def test_delete_processing_log(self):
-        image_id = uuid.uuid4()
-        svg_image_id = uuid.uuid4()
-        processing_log_id = uuid.uuid4()
+        image = Image(label='test', url='test')
+        processing_log = ProcessingLog(status='processing', description='test')
 
-        image = Image(id=image_id, label='test', url='test')
+        image.processing_log.append(processing_log)
+
         image_repository.add(image)
-
-        svg_image = SVGImage(id=svg_image_id, original_id=image_id, url='test2')
-        svg_image_repository.add(svg_image)
-
-        processing_log = ProcessingLog(
-            id=processing_log_id, image_id=svg_image_id, status='processing', description='test'
-        )
-        processing_log_repository.add(processing_log)
+        processing_log_id = processing_log_repository.add(processing_log)
 
         processing_log_repository.delete(processing_log)
         processing_log = processing_log_repository.get(ProcessingLog, processing_log_id)
         assert processing_log is None
 
     def test_delete_image_cascade(self):
-        image_id = uuid.uuid4()
-        svg_image_id = uuid.uuid4()
-        processing_log_id = uuid.uuid4()
+        image = Image(label='test', url='test')
+        svg = SVG(url='test2')
+        processing_log = ProcessingLog(status='processing', description='test')
 
-        image = Image(id=image_id, label='test', url='test')
-        image_repository.add(image)
+        image.svg.append(svg)
+        image.processing_log.append(processing_log)
 
-        svg_image = SVGImage(id=svg_image_id, original_id=image_id, url='test2')
-        svg_image_repository.add(svg_image)
+        image_id = image_repository.add(image)
+        svg_id = svg_repository.add(image)
+        processing_log_id = processing_log_repository.add(image)
 
-        processing_log = ProcessingLog(
-            id=processing_log_id, image_id=svg_image_id, status='processing', description='test'
-        )
-        processing_log_repository.add(processing_log)
-
-        # when
         image_repository.delete(image)
 
-        image = image_repository.get(Image, image_id)
-        svg_image = svg_image_repository.get(SVGImage, svg_image_id)
-        processing_log = processing_log_repository.get(ProcessingLog, processing_log_id)
-
-        # then
-        assert image is None
-        assert svg_image is None
-        assert processing_log is None
+        assert image_repository.get(Image, image_id) is None
+        assert svg_repository.get(SVG, svg_id) is None
+        assert processing_log_repository.get(ProcessingLog, processing_log_id) is None
