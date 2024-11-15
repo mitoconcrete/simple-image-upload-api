@@ -123,10 +123,14 @@ def process_image_to_svg(image: bytes) -> bytes:
     """
     이미지를 받아서 처리합니다.
     """
-    svg_image = _image_to_svg(image)
-    optimized_svg = _svg_optimizer(svg_image)
+    svg = _image_to_svg(image)
+    optimized_svg = _svg_optimizer(svg)
     return optimized_svg
 
 
 def get_image_size(image: bytes):
     return len(image)
+
+
+def get_image_type(image: bytes) -> str:
+    return Image.open(BytesIO(image)).format.lower()

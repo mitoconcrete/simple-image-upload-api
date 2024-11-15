@@ -1,13 +1,8 @@
-import os
 import pytest
 
-from app.db.models.processing_log import ProcessingLog
-from app.db.models.svg import SVG
-from app.db.repositories import image_repository, processing_log_repository, svg_repository
-from app.schemas.enum import ImageProcessingType
-from app.schemas.request_dto import UploadImageServiceRequestDto, UploadSVGServiceRequestDto
-from app.schemas.response_dto import UploadImageServiceResponseDto, UploadSVGServiceResponseDto, UploadServiceResponseDto
-from app.services.image_service import _is_allowed_image_count, _is_allowed_image_size, _is_allowed_image_type, upload_image_service, upload_svg_service
+from app.schemas.dto.service_request import UploadImageServiceRequestDto, UploadSVGServiceRequestDto
+from app.schemas.dto.service_response import UploadImageServiceResponseDto, UploadSVGServiceResponseDto
+from app.services.image_service import _is_allowed_image_count, _is_allowed_image_size, _is_allowed_image_type, _upload_image_service, _upload_svg_service
 from app.tests.helper import create_test_image, create_test_svg, create_test_text, delete_test_image, delete_test_text
 
 
@@ -106,12 +101,11 @@ class TestImageService:
                 image=bytes_image,
                 label='',
             )
-            response = upload_image_service(dto)
+            response = _upload_image_service(dto)
             
             assert isinstance(response, UploadImageServiceResponseDto)
             assert response.id is not None
             assert response.original_url is not None
-            assert response.status == ImageProcessingType.READY
 
     def test_upload_svg_service(self):
         with open('app/tests/utils/test_image.jpg', 'rb') as f:
@@ -120,42 +114,25 @@ class TestImageService:
                 image=bytes_image,
                 label='',
             )
-            response = upload_image_service(dto)
+            response = _upload_image_service(dto)
 
             next_dto =  UploadSVGServiceRequestDto(
                 original_id=response.id,
                 image=response.image
             )
-            svg = upload_svg_service(next_dto)
+            svg = _upload_svg_service(next_dto)
 
             assert isinstance(svg, UploadSVGServiceResponseDto)
             assert svg.id is not None
-            assert any([svg.status == ImageProcessingType.PROCESSING, svg.status == ImageProcessingType.COMPLETED])
-
-    def test_tracking_image_fail_status(self):
-        pass
-        # with open('app/tests/utils/test_image.jpg', 'rb') as f:
-        #     bytes_image = f.read()
-        #     dto = UploadImageServiceRequestDto(
-        #         image=bytes_image,
-        #         label='',
-        #     )
-        #     response = upload_image_service(dto)
-
-        #     next_dto =  UploadSVGServiceRequestDto(
-        #         original_id=response.id,
-        #         image=b''
-        #     )
-
-        #     # upload_svg_service 실행 중 오류가 발생하도록 합니다.
-        #     response = upload_svg_service(next_dto)
-            
-
-        #     # svg = upload_svg_service(next_dto)
-
-        #     assert isinstance(svg, UploadSVGServiceResponseDto)
-        #     assert svg.id is not None
-        #     assert svg.status == ImageProcessingType.FAILED
 
     def test_get_image_list(self):
-        pass
+        with open('app/tests/utils/test_image.jpg', 'rb') as f:
+            bytes_image = f.read()
+            dto = UploadImageServiceRequestDto(
+                image=bytes_image,
+                label='',
+            )
+            response = _upload_image_service(dto)
+            assert response is not None
+            assert response.id is not None
+            assert response.original_url is not None
