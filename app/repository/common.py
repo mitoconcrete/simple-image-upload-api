@@ -10,6 +10,7 @@ T = TypeVar('T')
 InputDAO = TypeVar('CommonInput', bound=CommonInput)
 OutputDAO = TypeVar('CommonOutput', bound=CommonOutput)
 
+
 class BaseRepository(ABC, Generic[T, InputDAO, OutputDAO]):
     def __init__(self, session: Session, model: Type[T], output_class: Type[OutputDAO]):
         self.session = session

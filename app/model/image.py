@@ -18,6 +18,7 @@ class Image(TimeStampedModel):
         'ProcessingLog', back_populates='image', lazy='selectin', cascade='all, delete-orphan'
     )
 
+
 class SVG(TimeStampedModel):
     __tablename__ = 'svg'
 

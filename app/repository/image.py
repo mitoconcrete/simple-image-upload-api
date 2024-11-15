@@ -1,12 +1,20 @@
 from typing import List, Optional
-from app.model.image import Image, SVG, ProcessingLog
+
+from app.model.image import SVG, Image, ProcessingLog
 from app.repository.common import BaseRepository
 from app.schema.dao.image import ImageInput, ImageOutput, ProcessingLogInput, ProcessingLogOutput, SVGInput, SVGOutput
 
 
 class ImageRepository(BaseRepository[Image, ImageInput, ImageOutput]):
     def get_processing_logs(self, id: str) -> Optional[List[ProcessingLog]]:
-        return self.session.query(ProcessingLog).join(Image).filter(Image.id == id).order_by(ProcessingLog.created_at.desc()).all()
+        return (
+            self.session.query(ProcessingLog)
+            .join(Image)
+            .filter(Image.id == id)
+            .order_by(ProcessingLog.created_at.desc())
+            .all()
+        )
+
     # def get_info_with_latest_log(self, entity: Image, entity_id: str) -> Optional[ImageInfoResponse | None]:
     #     image = self.get(entity, entity_id)
     #     latest_log = self.get_latest_processing_log(entity, entity_id)
@@ -28,8 +36,6 @@ class ImageRepository(BaseRepository[Image, ImageInput, ImageOutput]):
     # def get_latest_processing_log(self, entity: Image, entity_id: str) -> Optional[ProcessingLog | None]:
     #     return self.get(entity, entity_id).processing_log.order_by(ProcessingLog.created_at.desc()).first()
 
-
-
     # def add_processing_log(self, entity_id: uuid.UUID, processing_log: ProcessingLog) -> None:
     #     entity = self.get(Image, entity_id)
 
@@ -38,8 +44,10 @@ class ImageRepository(BaseRepository[Image, ImageInput, ImageOutput]):
     #         session.merge(entity)
     #         session.commit()
 
+
 class SVGRepository(BaseRepository[SVG, SVGInput, SVGOutput]):
     pass
+
 
 class ProcessingLogRepository(BaseRepository[ProcessingLog, ProcessingLogInput, ProcessingLogOutput]):
     pass
