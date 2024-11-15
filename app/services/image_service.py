@@ -9,4 +9,5 @@ def _is_allowed_image_type(dto: ImageUploadServiceRequestDto) -> bool:
 
 
 def _is_allowed_image_size(dto: ImageUploadServiceRequestDto) -> bool:
+    print(len(dto.image))
     return len(dto.image) < MAXIMUM_IMAGE_SIZE
