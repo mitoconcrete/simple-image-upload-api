@@ -20,7 +20,6 @@ class TestImageService:
         delete_test_image('app/tests/utils/test_image.svg')
         delete_test_text('app/tests/utils/test_text.txt')
 
-
     def test_check_image_type_success(self):
         with open('app/tests/utils/test_image.jpg', 'rb') as f:
             bytes_image = f.read()
@@ -62,7 +61,7 @@ class TestImageService:
 
     def test_check_image_count_fail(self):
         pass
-    
+
     def test_upload_image_service(self):
         pass
 

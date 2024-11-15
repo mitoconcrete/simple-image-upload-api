@@ -13,5 +13,4 @@ class Image(TimeStampedModel):
     label = Column(String, nullable=False)
     url = Column(String, nullable=False)
 
-    svg_image = relationship("SVGImage", back_populates="image", cascade="all, delete-orphan")
-
+    svg_image = relationship('SVGImage', back_populates='image', cascade='all, delete-orphan')

@@ -13,6 +13,5 @@ class ProcessingLog(TimeStampedModel):
     image_id = Column(UUID(as_uuid=True), ForeignKey('svg_image.id'), nullable=False)
     status = Column(String, nullable=False, default='processing')
     description = Column(String, nullable=True)
-    
-    svg_image = relationship('SVGImage', back_populates='processing_log')
 
+    svg_image = relationship('SVGImage', back_populates='processing_log')

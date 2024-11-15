@@ -8,7 +8,7 @@ from app.utils.s3_uploder import S3Uploader
 
 
 # 테스트 이미지 파일(jpg, png) 생성
-def create_test_image(image_path: str, image_format: str, width: Optional[int] = None, height: Optional[int] = None): 
+def create_test_image(image_path: str, image_format: str, width: Optional[int] = None, height: Optional[int] = None):
     width = width or 1000
     height = height or 1000
     image = Image.new('RGB', (width, height))

@@ -7,7 +7,7 @@ from app.db.repositories import image_repository, processing_log_repository, svg
 
 
 class TestRepository:
-    #매 함수가 종료될 때마다 새로운 데이터베이스를 생성하고 삭제
+    # 매 함수가 종료될 때마다 새로운 데이터베이스를 생성하고 삭제
     @pytest.fixture(autouse=True)
     def run_around_tests(self):
         image_repository.delete_all(Image)
@@ -25,7 +25,7 @@ class TestRepository:
         image = image_repository.get(Image, id)
 
         assert image.label == 'test'
-        assert image.url == 'test'        
+        assert image.url == 'test'
 
     def test_create_svg_image(self):
         image_id = uuid.uuid4()
@@ -34,16 +34,15 @@ class TestRepository:
         image = Image(id=image_id, label='test', url='test')
         image_repository.add(image)
 
-        svg_image = SVGImage(id=svg_image_id, original_id=image_id, url="test2")
+        svg_image = SVGImage(id=svg_image_id, original_id=image_id, url='test2')
         svg_image_repository.add(svg_image)
 
         svg_image = svg_image_repository.get(SVGImage, svg_image_id)
-        
+
         assert svg_image.image.id == image_id
         assert svg_image.id == svg_image_id
-        assert svg_image.url == "test2"
+        assert svg_image.url == 'test2'
         assert svg_image.original_id == image_id
-
 
     def test_create_processing_log(self):
         image_id = uuid.uuid4()
@@ -53,10 +52,12 @@ class TestRepository:
         image = Image(id=image_id, label='test', url='test')
         image_repository.add(image)
 
-        svg_image = SVGImage(id=svg_image_id, original_id=image_id, url="test2")
+        svg_image = SVGImage(id=svg_image_id, original_id=image_id, url='test2')
         svg_image_repository.add(svg_image)
 
-        processing_log = ProcessingLog(id=processing_log_id, image_id=svg_image_id, status='processing', description='test')
+        processing_log = ProcessingLog(
+            id=processing_log_id, image_id=svg_image_id, status='processing', description='test'
+        )
         processing_log_repository.add(processing_log)
 
         processing_log = processing_log_repository.get(ProcessingLog, processing_log_id)
@@ -66,7 +67,7 @@ class TestRepository:
         assert processing_log.status == 'processing'
         assert processing_log.description == 'test'
 
-    def test_list_images(self):        
+    def test_list_images(self):
         image_id = uuid.uuid4()
         image = Image(id=image_id, label='test', url='test')
         image2 = Image(id=uuid.uuid4(), label='test2', url='test2')
@@ -87,8 +88,8 @@ class TestRepository:
         image = Image(id=image_id, label='test', url='test')
         image_repository.add(image)
 
-        svg_image = SVGImage(id=svg_image_id, original_id=image_id, url="test2")
-        svg_image2 = SVGImage(id=uuid.uuid4(), original_id=image_id, url="test3")
+        svg_image = SVGImage(id=svg_image_id, original_id=image_id, url='test2')
+        svg_image2 = SVGImage(id=uuid.uuid4(), original_id=image_id, url='test3')
         svg_image_repository.add(svg_image)
         svg_image_repository.add(svg_image2)
 
@@ -105,11 +106,15 @@ class TestRepository:
         image = Image(id=image_id, label='test', url='test')
         image_repository.add(image)
 
-        svg_image = SVGImage(id=svg_image_id, original_id=image_id, url="test2")
+        svg_image = SVGImage(id=svg_image_id, original_id=image_id, url='test2')
         svg_image_repository.add(svg_image)
 
-        processing_log = ProcessingLog(id=processing_log_id, image_id=svg_image_id, status='processing', description='test')
-        processing_log2 = ProcessingLog(id=uuid.uuid4(), image_id=svg_image_id, status='processing', description='test2')
+        processing_log = ProcessingLog(
+            id=processing_log_id, image_id=svg_image_id, status='processing', description='test'
+        )
+        processing_log2 = ProcessingLog(
+            id=uuid.uuid4(), image_id=svg_image_id, status='processing', description='test2'
+        )
         processing_log_repository.add(processing_log)
         processing_log_repository.add(processing_log2)
 
@@ -117,7 +122,7 @@ class TestRepository:
         assert len(processing_logs) == 2
         assert processing_logs[0].description == 'test'
         assert processing_logs[1].description == 'test2'
-    
+
     def test_update_image(self):
         image_id = uuid.uuid4()
         image = Image(id=image_id, label='test', url='test')
@@ -138,7 +143,7 @@ class TestRepository:
         image = Image(id=image_id, label='test', url='test')
         image_repository.add(image)
 
-        svg_image = SVGImage(id=svg_image_id, original_id=image_id, url="test2")
+        svg_image = SVGImage(id=svg_image_id, original_id=image_id, url='test2')
         svg_image_repository.add(svg_image)
 
         svg_image.url = 'test3'
@@ -155,10 +160,12 @@ class TestRepository:
         image = Image(id=image_id, label='test', url='test')
         image_repository.add(image)
 
-        svg_image = SVGImage(id=svg_image_id, original_id=image_id, url="test2")
+        svg_image = SVGImage(id=svg_image_id, original_id=image_id, url='test2')
         svg_image_repository.add(svg_image)
 
-        processing_log = ProcessingLog(id=processing_log_id, image_id=svg_image_id, status='processing', description='test')
+        processing_log = ProcessingLog(
+            id=processing_log_id, image_id=svg_image_id, status='processing', description='test'
+        )
         processing_log_repository.add(processing_log)
 
         processing_log.status = 'done'
@@ -183,7 +190,7 @@ class TestRepository:
         image = Image(id=image_id, label='test', url='test')
         image_repository.add(image)
 
-        svg_image = SVGImage(id=svg_image_id, original_id=image_id, url="test2")
+        svg_image = SVGImage(id=svg_image_id, original_id=image_id, url='test2')
         svg_image_repository.add(svg_image)
 
         svg_image_repository.delete(svg_image)
@@ -198,10 +205,12 @@ class TestRepository:
         image = Image(id=image_id, label='test', url='test')
         image_repository.add(image)
 
-        svg_image = SVGImage(id=svg_image_id, original_id=image_id, url="test2")
+        svg_image = SVGImage(id=svg_image_id, original_id=image_id, url='test2')
         svg_image_repository.add(svg_image)
 
-        processing_log = ProcessingLog(id=processing_log_id, image_id=svg_image_id, status='processing', description='test')
+        processing_log = ProcessingLog(
+            id=processing_log_id, image_id=svg_image_id, status='processing', description='test'
+        )
         processing_log_repository.add(processing_log)
 
         processing_log_repository.delete(processing_log)
@@ -216,10 +225,12 @@ class TestRepository:
         image = Image(id=image_id, label='test', url='test')
         image_repository.add(image)
 
-        svg_image = SVGImage(id=svg_image_id, original_id=image_id, url="test2")
+        svg_image = SVGImage(id=svg_image_id, original_id=image_id, url='test2')
         svg_image_repository.add(svg_image)
 
-        processing_log = ProcessingLog(id=processing_log_id, image_id=svg_image_id, status='processing', description='test')
+        processing_log = ProcessingLog(
+            id=processing_log_id, image_id=svg_image_id, status='processing', description='test'
+        )
         processing_log_repository.add(processing_log)
 
         # when
