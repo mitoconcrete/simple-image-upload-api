@@ -1,8 +1,10 @@
 import uuid
+
 import pytest
 
-from app.db.models import Image, SVGImage, ProcessingLog
-from app.db.repositories import image_repository, svg_image_repository, processing_log_repository
+from app.db.models import Image, ProcessingLog, SVGImage
+from app.db.repositories import image_repository, processing_log_repository, svg_image_repository
+
 
 class TestRepository:
     #매 함수가 종료될 때마다 새로운 데이터베이스를 생성하고 삭제
@@ -172,7 +174,7 @@ class TestRepository:
 
         image_repository.delete(image)
         image = image_repository.get(Image, image_id)
-        assert image == None
+        assert image is None
 
     def test_delete_svg_image(self):
         image_id = uuid.uuid4()
@@ -186,7 +188,7 @@ class TestRepository:
 
         svg_image_repository.delete(svg_image)
         svg_image = svg_image_repository.get(SVGImage, svg_image_id)
-        assert svg_image == None
+        assert svg_image is None
 
     def test_delete_processing_log(self):
         image_id = uuid.uuid4()
@@ -204,7 +206,7 @@ class TestRepository:
 
         processing_log_repository.delete(processing_log)
         processing_log = processing_log_repository.get(ProcessingLog, processing_log_id)
-        assert processing_log == None
+        assert processing_log is None
 
     def test_delete_image_cascade(self):
         image_id = uuid.uuid4()
@@ -228,6 +230,6 @@ class TestRepository:
         processing_log = processing_log_repository.get(ProcessingLog, processing_log_id)
 
         # then
-        assert image == None
-        assert svg_image == None
-        assert processing_log == None
+        assert image is None
+        assert svg_image is None
+        assert processing_log is None

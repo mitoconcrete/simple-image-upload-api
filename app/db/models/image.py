@@ -1,7 +1,7 @@
 import uuid
 
-from sqlalchemy.orm import relationship
 from sqlalchemy import UUID, Column, String
+from sqlalchemy.orm import relationship
 
 from app.db.models.base import TimeStampedModel
 

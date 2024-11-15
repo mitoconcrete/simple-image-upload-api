@@ -1,5 +1,6 @@
 from abc import ABC
 from typing import Generic, List, Optional, Type, TypeVar
+
 from sqlalchemy.orm import sessionmaker
 
 T = TypeVar('T')
