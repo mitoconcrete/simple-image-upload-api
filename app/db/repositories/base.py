@@ -1,7 +1,6 @@
+import uuid
 from abc import ABC
 from typing import Generic, List, Optional, Type, TypeVar
-import uuid
-
 
 from sqlalchemy.orm import sessionmaker
 

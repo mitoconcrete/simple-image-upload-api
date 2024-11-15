@@ -2,6 +2,7 @@ from fastapi import APIRouter
 
 router = APIRouter()
 
-@router.get("/")
+
+@router.get('/')
 async def read_images():
-    return [{"image": "fakeimage.jpg"}]
+    return [{'image': 'fakeimage.jpg'}]

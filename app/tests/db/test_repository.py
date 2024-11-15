@@ -1,8 +1,6 @@
-import uuid
-
 import pytest
 
-from app.db.models import Image, ProcessingLog, SVG
+from app.db.models import SVG, Image, ProcessingLog
 from app.db.repositories import image_repository, processing_log_repository, svg_repository
 
 
@@ -41,9 +39,7 @@ class TestRepository:
 
     def test_create_processing_log(self):
         image = Image(label='test', url='test')
-        processing_log = ProcessingLog(
-            status='processing', description='test'
-        )
+        processing_log = ProcessingLog(status='processing', description='test')
 
         image.processing_log.append(processing_log)
 
@@ -73,12 +69,8 @@ class TestRepository:
 
     def test_list_processing_logs(self):
         image = Image(label='test', url='test')
-        processing_log = ProcessingLog(
-            status='processing', description='test'
-        )
-        processing_log2 = ProcessingLog(
-            status='processing', description='test2'
-        )
+        processing_log = ProcessingLog(status='processing', description='test')
+        processing_log2 = ProcessingLog(status='processing', description='test2')
 
         image.processing_log.append(processing_log)
         image.processing_log.append(processing_log2)
@@ -107,9 +99,9 @@ class TestRepository:
     def test_update_svg(self):
         image = Image(label='test', url='test')
         svg = SVG(url='test2')
-        
+
         image.svg.append(svg)
-        
+
         image_repository.add(image)
         svg_id = svg_repository.add(svg)
 
@@ -121,9 +113,7 @@ class TestRepository:
 
     def test_update_processing_log(self):
         image = Image(label='test', url='test')
-        processing_log = ProcessingLog(
-            status='processing', description='test'
-        )
+        processing_log = ProcessingLog(status='processing', description='test')
 
         image.processing_log.append(processing_log)
 
@@ -139,18 +129,18 @@ class TestRepository:
         image = Image(label='test', url='test')
 
         image_id = image_repository.add(image)
-        
+
         image_repository.delete(image)
-        
+
         image = image_repository.get(Image, image_id)
         assert image is None
 
     def test_delete_svg(self):
         image = Image(label='test', url='test')
         svg = SVG(url='test2')
-        
+
         image.svg.append(svg)
-         
+
         image_repository.add(image)
         svg_id = svg_repository.add(svg)
 

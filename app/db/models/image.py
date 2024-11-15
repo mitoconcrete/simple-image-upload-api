@@ -14,5 +14,6 @@ class Image(TimeStampedModel):
     url = Column(String, nullable=False)
 
     svg = relationship('SVG', back_populates='image', cascade='all, delete-orphan')
-    processing_log = relationship("ProcessingLog", back_populates="image", lazy='selectin', cascade="all, delete-orphan")
-
+    processing_log = relationship(
+        'ProcessingLog', back_populates='image', lazy='selectin', cascade='all, delete-orphan'
+    )

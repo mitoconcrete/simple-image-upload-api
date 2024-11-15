@@ -2,7 +2,13 @@ import pytest
 
 from app.schemas.dto.service_request import UploadImageServiceRequestDto, UploadSVGServiceRequestDto
 from app.schemas.dto.service_response import UploadImageServiceResponseDto, UploadSVGServiceResponseDto
-from app.services.image_service import _is_allowed_image_count, _is_allowed_image_size, _is_allowed_image_type, _upload_image_service, _upload_svg_service
+from app.services.image_service import (
+    _is_allowed_image_count,
+    _is_allowed_image_size,
+    _is_allowed_image_type,
+    _upload_image_service,
+    _upload_svg_service,
+)
 from app.tests.helper import create_test_image, create_test_svg, create_test_text, delete_test_image, delete_test_text
 
 
@@ -18,8 +24,7 @@ class TestImageService:
         delete_test_image('app/tests/utils/test_image.jpg')
         delete_test_image('app/tests/utils/test_image.svg')
         delete_test_text('app/tests/utils/test_text.txt')
-        
-        
+
     def test_check_image_type_success(self):
         with open('app/tests/utils/test_image.jpg', 'rb') as f:
             bytes_image = f.read()
@@ -63,15 +68,9 @@ class TestImageService:
         with open('app/tests/utils/test_image.jpg', 'rb') as f:
             bytes_image = f.read()
             dtos = [
-            UploadImageServiceRequestDto(
-                image=bytes_image,
-                label=''), 
-            UploadImageServiceRequestDto(
-                image=bytes_image,
-                label=''),
-            UploadImageServiceRequestDto(
-                image=bytes_image,
-                label='')
+                UploadImageServiceRequestDto(image=bytes_image, label=''),
+                UploadImageServiceRequestDto(image=bytes_image, label=''),
+                UploadImageServiceRequestDto(image=bytes_image, label=''),
             ]
             assert _is_allowed_image_count(dtos)
 
@@ -79,18 +78,10 @@ class TestImageService:
         with open('app/tests/utils/test_image.jpg', 'rb') as f:
             bytes_image = f.read()
             dtos = [
-            UploadImageServiceRequestDto(
-                image=bytes_image,
-                label=''), 
-            UploadImageServiceRequestDto(
-                image=bytes_image,
-                label=''),
-            UploadImageServiceRequestDto(
-                image=bytes_image,
-                label=''),
-            UploadImageServiceRequestDto(
-                image=bytes_image,
-                label='')
+                UploadImageServiceRequestDto(image=bytes_image, label=''),
+                UploadImageServiceRequestDto(image=bytes_image, label=''),
+                UploadImageServiceRequestDto(image=bytes_image, label=''),
+                UploadImageServiceRequestDto(image=bytes_image, label=''),
             ]
             assert not _is_allowed_image_count(dtos)
 
@@ -102,7 +93,7 @@ class TestImageService:
                 label='',
             )
             response = _upload_image_service(dto)
-            
+
             assert isinstance(response, UploadImageServiceResponseDto)
             assert response.id is not None
             assert response.original_url is not None
@@ -116,10 +107,7 @@ class TestImageService:
             )
             response = _upload_image_service(dto)
 
-            next_dto =  UploadSVGServiceRequestDto(
-                original_id=response.id,
-                image=response.image
-            )
+            next_dto = UploadSVGServiceRequestDto(original_id=response.id, image=response.image)
             svg = _upload_svg_service(next_dto)
 
             assert isinstance(svg, UploadSVGServiceResponseDto)
