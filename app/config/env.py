@@ -1,11 +1,7 @@
-"""Manages the environment variables using pydantic."""
-
 from pydantic_settings import BaseSettings
 
 
-class Setting(BaseSettings):
-    """Setting Configuration."""
-
+class EnvironmentContainer(BaseSettings):
     AWS_ACCESS_KEY_ID: str
     AWS_SECRET_ACCESS_KEY: str
     AWS_DEFAULT_REGION: str
@@ -16,4 +12,4 @@ class Setting(BaseSettings):
         case_sensitive = False
 
 
-setting = Setting()  # type: ignore
+env = EnvironmentContainer()

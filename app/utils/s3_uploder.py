@@ -2,16 +2,16 @@ import logging
 
 import boto3
 
-from app.configs.setting import setting
+from app.config.env import env
 
 
 class S3Uploader:
     def __init__(self):
         self.s3 = boto3.client(
             's3',
-            aws_access_key_id=setting.AWS_ACCESS_KEY_ID,
-            aws_secret_access_key=setting.AWS_SECRET_ACCESS_KEY,
-            region_name=setting.AWS_DEFAULT_REGION,
+            aws_access_key_id=env.AWS_ACCESS_KEY_ID,
+            aws_secret_access_key=env.AWS_SECRET_ACCESS_KEY,
+            region_name=env.AWS_DEFAULT_REGION,
         )
 
     def _has_bucket(self, bucket_name: str) -> bool:
@@ -48,7 +48,7 @@ class S3Uploader:
 
     def upload_file(self, bucket_name: str, file_name: str, file_data: bytes) -> str:
         self.s3.put_object(Bucket=bucket_name, Key=file_name, Body=file_data)
-        return f'https://{bucket_name}.s3.{setting.AWS_DEFAULT_REGION}.amazonaws.com/{file_name}'
+        return f'https://{bucket_name}.s3.{env.AWS_DEFAULT_REGION}.amazonaws.com/{file_name}'
 
     def delete_file(self, bucket_name: str, file_name: str) -> None:
         self.s3.delete_object(Bucket=bucket_name, Key=file_name)
