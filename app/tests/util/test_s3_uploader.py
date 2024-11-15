@@ -1,7 +1,7 @@
 import pytest
 
 from app.tests.helper import create_test_image, delete_test_bucket, delete_test_image
-from app.utils.s3_uploder import S3Uploader
+from app.util.s3_uploder import S3Uploader
 
 
 class TestS3Uploader:
@@ -15,10 +15,10 @@ class TestS3Uploader:
 
     @pytest.fixture(scope='class', autouse=True)
     def setup_and_teardown(self, bucket_name: str):
-        create_test_image('app/tests/utils/test_image.jpg', 'JPEG')
+        create_test_image('app/tests/util/test_image.jpg', 'JPEG')
         yield
         # 테스트 이미지 파일 삭제
-        delete_test_image('app/tests/utils/test_image.jpg')
+        delete_test_image('app/tests/util/test_image.jpg')
         delete_test_bucket(bucket_name)
 
     def test_create_bucket(self, s3_uploader: S3Uploader, bucket_name: str):
@@ -36,7 +36,7 @@ class TestS3Uploader:
 
     def test_upload_image(self, s3_uploader: S3Uploader, bucket_name: str):
         image_key = 'test_image.jpg'
-        with open(f'app/tests/utils/{image_key}', 'rb') as f:
+        with open(f'app/tests/util/{image_key}', 'rb') as f:
             image_data = f.read()
 
             image_url = s3_uploader.upload_file(bucket_name, image_key, image_data)

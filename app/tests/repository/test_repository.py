@@ -4,7 +4,7 @@ from app.model.image import SVG, Image, ProcessingLog
 from app.repository import image_repository, processing_log_repository, svg_repository
 from app.schema.dao.image import ImageInput, ProcessingLogInput, SVGInput
 from app.schema.enum.image import ImageProcessingType
-from app.utils.init_db import create_tables
+from app.util.init_db import create_tables
 
 
 class TestRepository:

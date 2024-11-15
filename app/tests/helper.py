@@ -3,7 +3,7 @@ import os
 
 from PIL import Image
 
-from app.utils.s3_uploder import S3Uploader
+from app.util.s3_uploder import S3Uploader
 
 
 # 테스트 이미지 파일(jpg, png) 생성
