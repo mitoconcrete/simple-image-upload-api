@@ -25,19 +25,19 @@ class TestRepository:
         assert image_id is not None
 
     def test_create_svg(self):
-        image = Image(label='test', url='test')
-        svg = SVG(url='test2')
+        new_image = Image(label='test', url='test')
+        new_svg = SVG(url='test2')
 
-        image.svg.append(svg)
+        new_image.svg.append(new_svg)
 
-        image_id = image_repository.add(image)
-        svg_id = svg_repository.add(svg)
+        created_image_id = image_repository.add(new_image)
+        created_svg_id = svg_repository.add(new_svg)
 
-        svg = svg_repository.get(SVG, svg_id)
-        assert svg.image.id == image_id
-        assert svg.id == svg_id
+        svg = svg_repository.get(SVG, created_svg_id)
+        assert svg.image.id == created_image_id
+        assert svg.id == created_svg_id
         assert svg.url == 'test2'
-        assert svg.original_id == image_id
+        assert svg.original_id == created_image_id
 
     def test_create_processing_log(self):
         image = Image(label='test', url='test')
