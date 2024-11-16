@@ -1,28 +1,36 @@
 import pytest
 
 from app.model.image import SVG, Image, ProcessingLog
-from app.repository import image_repository, processing_log_repository, svg_repository
-from app.schema.dao.image import ImageInput, ProcessingLogInput, SVGInput
+from app.repository.image import ImageRepository, ProcessingLogRepository, SVGRepository
+from app.schema.dao.image import ImageInput, ImageOutput, ProcessingLogInput, ProcessingLogOutput, SVGInput, SVGOutput
 from app.schema.enum.image import ImageProcessingType
-from app.util.init_db import create_tables
+from app.tests.helper import get_test_db
 
 
 class TestRepository:
-    @pytest.fixture(autouse=True)
-    def run_around_tests(self):
-        create_tables()
-        yield
-        image_repository.delete_all()
-        svg_repository.delete_all()
-        processing_log_repository.delete_all()
+    @pytest.fixture
+    def test_session(self):
+        return next(get_test_db())
 
-    def test_create_image(self):
+    @pytest.fixture
+    def image_repository(self, test_session) -> ImageRepository:
+        return ImageRepository(test_session, Image, ImageOutput)
+
+    @pytest.fixture
+    def svg_repository(self, test_session) -> SVGRepository:
+        return SVGRepository(test_session, SVG, SVGOutput)
+
+    @pytest.fixture
+    def processing_log_repository(self, test_session) -> ProcessingLogRepository:
+        return ProcessingLogRepository(test_session, ProcessingLog, ProcessingLogOutput)
+
+    def test_create_image(self, image_repository):
         new_image = Image(label='test', url='test')
         created_image = image_repository.add(new_image)
 
         assert created_image.id is not None
 
-    def test_create_svg(self):
+    def test_create_svg(self, image_repository, svg_repository):
         new_image = Image(label='test', url='test')
         new_svg = SVG(url='test2')
 
@@ -36,7 +44,7 @@ class TestRepository:
         assert retrieved_svg.url == 'test2'
         assert retrieved_svg.original_id == created_image.id
 
-    def test_create_processing_log(self):
+    def test_create_processing_log(self, image_repository, processing_log_repository):
         new_image = Image(label='test', url='test')
         new_processing_log = ProcessingLog(status='processing', description='test')
 
@@ -52,7 +60,7 @@ class TestRepository:
         assert retrieved_processing_log.status == 'processing'
         assert retrieved_processing_log.description == 'test'
 
-    def test_get_images(self):
+    def test_get_images(self, image_repository):
         new_image01 = Image(label='test', url='test')
         new_image02 = Image(label='test2', url='test2')
 
@@ -66,7 +74,7 @@ class TestRepository:
         assert created_images[1].label == 'test2'
         assert created_images[1].url == 'test2'
 
-    def test_update_image(self):
+    def test_update_image(self, image_repository):
         new_image = Image(label='test', url='test')
         created_image = image_repository.add(new_image)
 
@@ -78,7 +86,7 @@ class TestRepository:
         assert retrieved_image.label == 'test2'
         assert retrieved_image.url == 'test3'
 
-    def test_update_svg(self):
+    def test_update_svg(self, image_repository, svg_repository):
         new_image = Image(label='test', url='test')
         new_svg = SVG(url='test2')
 
@@ -93,7 +101,7 @@ class TestRepository:
         retrieved_svg = svg_repository.get(created_svg.id)
         assert retrieved_svg.url == 'test3'
 
-    def test_update_processing_log(self):
+    def test_update_processing_log(self, image_repository, processing_log_repository):
         new_image = Image(label='test', url='test')
         new_processing_log = ProcessingLog(status=ImageProcessingType.FAILED, description='test')
 
@@ -108,7 +116,7 @@ class TestRepository:
         retrieved_processing_log = processing_log_repository.get(created_processing_log.id)
         assert retrieved_processing_log.status == ImageProcessingType.COMPLETED
 
-    def test_delete_image(self):
+    def test_delete_image(self, image_repository):
         new_image = Image(label='test', url='test')
 
         created_image = image_repository.add(new_image)
@@ -118,7 +126,7 @@ class TestRepository:
         retrieved_image = image_repository.get(created_image.id)
         assert retrieved_image is None
 
-    def test_delete_svg(self):
+    def test_delete_svg(self, image_repository, svg_repository):
         new_image = Image(label='test', url='test')
         new_svg = SVG(url='test2')
 
@@ -132,7 +140,7 @@ class TestRepository:
         retrieved_svg = svg_repository.get(created_svg.id)
         assert retrieved_svg is None
 
-    def test_delete_processing_log(self):
+    def test_delete_processing_log(self, image_repository, processing_log_repository):
         new_image = Image(label='test', url='test')
         new_processing_log = ProcessingLog(status='processing', description='test')
 
@@ -145,7 +153,7 @@ class TestRepository:
         retrieved_processing_log = processing_log_repository.get(created_processing_log.id)
         assert retrieved_processing_log is None
 
-    def test_delete_image_cascade(self):
+    def test_delete_image_cascade(self, image_repository, svg_repository, processing_log_repository):
         new_image = Image(label='test', url='test')
         new_svg = SVG(url='test2')
         new_processing_log = ProcessingLog(status='processing', description='test')
