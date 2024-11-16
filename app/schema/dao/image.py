@@ -32,15 +32,6 @@ database related output schema
 """
 
 
-class ImageOutput(CommonOutput):
-    id: UUID4
-    original_url: str
-    svg_url: Optional[str] = None
-    label: Optional[str] = None
-    created_at: datetime
-    updated_at: datetime
-
-
 class ProcessingLogOutput(CommonOutput):
     id: UUID4
     original_id: UUID4
@@ -52,3 +43,40 @@ class ProcessingLogOutput(CommonOutput):
         data = super().model_dump()
         data['status'] = ImageProcessingType(data['status'])
         return data
+
+
+class ImageOutput(CommonOutput):
+    id: UUID4
+    original_url: str
+    svg_url: Optional[str] = None
+    label: Optional[str] = None
+    processing_log: list[ProcessingLogOutput] = []
+    created_at: datetime
+    updated_at: datetime
+
+    def model_dump(self):
+        data = super().model_dump()
+        data['processing_log'] = [ProcessingLogOutput(**log).model_dump() for log in data['processing_log']]
+        return data
+
+
+class MixinImageProcessingLogOutput(CommonOutput):
+    id: UUID4
+    original_url: str
+    svg_url: Optional[str] = None
+    status: Optional[ImageProcessingType] = None
+    created_at: datetime
+    updated_at: datetime
+
+    def model_dump(self):
+        data = super().model_dump()
+        data['status'] = ImageProcessingType(data['status'])
+        data['processing_log'] = [ProcessingLogOutput(**log).model_dump() for log in data['processing_log']]
+        return data
+
+
+class ImagePaginationOutput(CommonOutput):
+    total: int
+    page: int
+    limit: int
+    items: list[MixinImageProcessingLogOutput] = []

@@ -1,5 +1,5 @@
 from abc import ABC
-from typing import Generic, List, Optional, Type, TypeVar
+from typing import Generic, List, Optional, Type, TypeVar, Union
 
 from pydantic import UUID4
 from sqlalchemy.orm import Session
@@ -17,9 +17,9 @@ class BaseRepository(ABC, Generic[T, InputDAO, OutputDAO]):
         self.model = model
         self.output_class = output_class
 
-    def _convert_to_output(self, model: T, custom_output_class: CommonOutput = None) -> OutputDAO:
+    def _convert_to_output(self, model: T, custom_output_class: CommonOutput = None) -> Union[OutputDAO, CommonOutput]:
         if custom_output_class:  # for mixin
-            return self.output_class.model_validate(model)
+            return custom_output_class.model_validate(model)
         return self.output_class.model_validate(model)
 
     def add(self, model: T) -> OutputDAO:
