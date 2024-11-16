@@ -12,12 +12,9 @@ database related input schema
 
 
 class ImageInput(CommonInput):
-    url: str
+    original_url: str
+    svg_url: Optional[str] = None
     label: Optional[str] = None
-
-
-class SVGInput(CommonInput):
-    url: str
 
 
 class ProcessingLogInput(CommonInput):
@@ -37,16 +34,11 @@ database related output schema
 
 class ImageOutput(CommonOutput):
     id: UUID4
-    url: str
+    original_url: str
+    svg_url: Optional[str] = None
     label: Optional[str] = None
     created_at: datetime
-
-
-class SVGOutput(CommonOutput):
-    id: UUID4
-    original_id: UUID4
-    url: str
-    created_at: datetime
+    updated_at: datetime
 
 
 class ProcessingLogOutput(CommonOutput):

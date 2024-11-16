@@ -1,8 +1,8 @@
 from typing import List, Optional
 
-from app.model.image import SVG, Image, ProcessingLog
+from app.model.image import Image, ProcessingLog
 from app.repository.common import BaseRepository
-from app.schema.dao.image import ImageInput, ImageOutput, ProcessingLogInput, ProcessingLogOutput, SVGInput, SVGOutput
+from app.schema.dao.image import ImageInput, ImageOutput, ProcessingLogInput, ProcessingLogOutput
 
 
 class ImageRepository(BaseRepository[Image, ImageInput, ImageOutput]):
@@ -43,10 +43,6 @@ class ImageRepository(BaseRepository[Image, ImageInput, ImageOutput]):
     #         entity.processing_log.append(processing_log)
     #         session.merge(entity)
     #         session.commit()
-
-
-class SVGRepository(BaseRepository[SVG, SVGInput, SVGOutput]):
-    pass
 
 
 class ProcessingLogRepository(BaseRepository[ProcessingLog, ProcessingLogInput, ProcessingLogOutput]):

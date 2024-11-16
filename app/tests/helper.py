@@ -5,8 +5,8 @@ from PIL import Image
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from app.model.image import SVG, ProcessingLog
 from app.model.image import Image as ImageModel
+from app.model.image import ProcessingLog
 from app.util.s3_uploder import S3Uploader
 
 
@@ -65,7 +65,7 @@ def get_test_db():
     db = SessionLocal()
 
     # 3. 테스트용 테이블 생성
-    for model in [ImageModel, SVG, ProcessingLog]:
+    for model in [ImageModel, ProcessingLog]:
         model.metadata.create_all(engine)
 
     # 4. 테스트용 DB session 반환
