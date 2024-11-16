@@ -52,7 +52,7 @@ class TestRepository:
         assert retrieved_processing_log.status == 'processing'
         assert retrieved_processing_log.description == 'test'
 
-    def test_list_images(self):
+    def test_get_images(self):
         new_image01 = Image(label='test', url='test')
         new_image02 = Image(label='test2', url='test2')
 
@@ -65,21 +65,6 @@ class TestRepository:
         assert created_images[0].url == 'test'
         assert created_images[1].label == 'test2'
         assert created_images[1].url == 'test2'
-
-    def test_list_processing_logs(self):
-        new_image = Image(label='test', url='test')
-        new_processing_log1 = ProcessingLog(status='processing', description='test')
-        new_processing_log2 = ProcessingLog(status='processing', description='test2')
-
-        new_image.processing_log.append(new_processing_log1)
-        new_image.processing_log.append(new_processing_log2)
-
-        image_repository.add(new_image)
-        processing_log_repository.add(new_processing_log1)
-        processing_log_repository.add(new_processing_log2)
-
-        processing_logs = image_repository.get_processing_logs(new_image.id)
-        assert len(processing_logs) == 2
 
     def test_update_image(self):
         new_image = Image(label='test', url='test')

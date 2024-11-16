@@ -17,7 +17,9 @@ class BaseRepository(ABC, Generic[T, InputDAO, OutputDAO]):
         self.model = model
         self.output_class = output_class
 
-    def _convert_to_output(self, model: T) -> OutputDAO:
+    def _convert_to_output(self, model: T, custom_output_class: CommonOutput = None) -> OutputDAO:
+        if custom_output_class: # for mixin
+            return self.output_class.model_validate(model)
         return self.output_class.model_validate(model)
 
     def add(self, model: T) -> OutputDAO:
