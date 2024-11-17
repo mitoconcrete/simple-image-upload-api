@@ -1,0 +1,6 @@
+# 테스트에 대한 파일은 무시
+__pycache__
+app/tests
+*.db
+.venv
+.env
