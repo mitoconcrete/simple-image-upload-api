@@ -9,9 +9,6 @@ from app.exception.image import (
     SaveException,
     UploadException,
 )
-from app.model.image import Image, ProcessingLog
-from app.repository.image import ImageRepository, ProcessingLogRepository
-from app.schema.dao.image import ImageOutput, ProcessingLogOutput
 from app.schema.dto.image import ImageServiceOutput, SaveLogInput
 from app.schema.enum.image import ImageProcessingType
 from app.service.image import ImageService
@@ -21,7 +18,6 @@ from app.tests.helper import (
     create_test_text,
     delete_test_image,
     delete_test_text,
-    get_test_db,
 )
 from app.util.image_util import create_save_path, get_image_format
 
@@ -40,22 +36,6 @@ class TestImageService:
         delete_test_image('app/tests/util/test_image.png')
         delete_test_image('app/tests/util/test_image.svg')
         delete_test_text('app/tests/util/test_text.txt')
-
-    @pytest.fixture
-    def test_session(self):
-        return next(get_test_db())
-
-    @pytest.fixture
-    def image_repository(self, test_session) -> ImageRepository:
-        return ImageRepository(test_session, Image, ImageOutput)
-
-    @pytest.fixture
-    def processing_log_repository(self, test_session) -> ProcessingLogRepository:
-        return ProcessingLogRepository(test_session, ProcessingLog, ProcessingLogOutput)
-
-    @pytest.fixture
-    def image_service(self, image_repository, processing_log_repository) -> ImageService:
-        return ImageService(image_repository, processing_log_repository)
 
     def test_check_image_type_success(self, image_service: ImageService):
         with open('app/tests/util/test_image.jpg', 'rb') as f:

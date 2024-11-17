@@ -1,25 +1,10 @@
-import pytest
-
 from app.model.image import Image, ProcessingLog
 from app.repository.image import ImageRepository, ProcessingLogRepository
-from app.schema.dao.image import ImageInput, ImageOutput, ProcessingLogInput, ProcessingLogOutput
+from app.schema.dao.image import ImageInput, ProcessingLogInput
 from app.schema.enum.image import ImageProcessingType
-from app.tests.helper import get_test_db
 
 
 class TestRepository:
-    @pytest.fixture
-    def test_session(self):
-        return next(get_test_db())
-
-    @pytest.fixture
-    def image_repository(self, test_session) -> ImageRepository:
-        return ImageRepository(test_session, Image, ImageOutput)
-
-    @pytest.fixture
-    def processing_log_repository(self, test_session) -> ProcessingLogRepository:
-        return ProcessingLogRepository(test_session, ProcessingLog, ProcessingLogOutput)
-
     def test_create_image(self, image_repository: ImageRepository):
         new_image = Image(original_url='test')
         created_image = image_repository.add(new_image)

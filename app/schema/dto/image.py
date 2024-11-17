@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
-from pydantic import UUID4, BaseModel
+from pydantic import UUID4, BaseModel, ConfigDict
 
 from app.schema.enum.image import ImageProcessingType
 
@@ -25,7 +25,7 @@ class ImageServiceOutput(BaseModel):
 
     def model_dump(self):
         data = super().model_dump()
-        data['status'] = ImageProcessingType(data['status'])
+        data['status'] = data['status'].value if data.get('status') else None
         return data
 
 
@@ -37,5 +37,32 @@ class ImageServicePaginationOutput(BaseModel):
 
     def model_dump(self):
         data = super().model_dump()
-        data['items'] = [ImageServiceOutput(**item) for item in data['items']]
+        data['items'] = [GetImageResponse(**item) for item in data['items']]
         return data
+
+
+class UploadImageResponse(BaseModel):
+    id: UUID4
+    original_url: str
+    status: Optional[str] = None
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class GetImageResponse(BaseModel):
+    id: UUID4
+    original_url: str
+    svg_url: Optional[str] = None
+    status: Optional[str] = None
+    created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class GetImagesResponse(BaseModel):
+    total: int
+    limit: int
+    page: int
+    items: list[GetImageResponse] = []
+
+    model_config = ConfigDict(from_attributes=True)

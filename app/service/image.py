@@ -2,6 +2,7 @@ from typing import Optional
 
 from app.config.env import env
 from app.exception.image import (
+    ImageServiceException,
     NotSupportedTypeException,
     OutOfAllowedCountException,
     OutOfAllowedSizeException,
@@ -14,12 +15,10 @@ from app.model.image import Image, ProcessingLog
 from app.repository.image import ImageRepository, ProcessingLogRepository
 from app.schema.dao.image import ImageInput
 from app.schema.dto.image import ImageServiceOutput, ImageServicePaginationOutput, SaveLogInput
+from app.util.contants import MAX_ALLOWED_IMAGE_COUNT, MAXIMUM_IMAGE_SIZE
 from app.util.helper import exception_handler
 from app.util.image_util import get_image_size, is_jpg_or_png, preprocess_image, process_image
 from app.util.s3_uploder import S3Uploader
-
-MAXIMUM_IMAGE_SIZE = 1024 * 1024 * 5  # 5MB
-MAX_ALLOWED_IMAGE_COUNT = 3
 
 
 class ImageService:
@@ -69,17 +68,17 @@ class ImageService:
         new_log = ProcessingLog(original_id=payload.original_id, status=payload.status.value)
         self.processing_log_repository.add(new_log)
 
-    @exception_handler(ImageServiceOutput)
+    @exception_handler(ImageServiceException)
     def get(self, image_id: str) -> Optional[ImageServiceOutput | None]:
         latest_image = self.image_repository.get_latest_image(image_id)
         return ImageServiceOutput(**latest_image.model_dump())
 
-    @exception_handler(ImageServiceOutput)
+    @exception_handler(ImageServiceException)
     def get_all(self, limit: int, offset: int) -> ImageServicePaginationOutput:
         images = self.image_repository.get_images_with_pagination(limit, offset)
         return ImageServicePaginationOutput(**images.model_dump())
 
-    @exception_handler(ImageServiceOutput)
+    @exception_handler(ImageServiceException)
     def update(self, image_id: str, svg_url: str) -> ImageServiceOutput:
         update_data = ImageInput(svg_url=svg_url)
         updated_image = self.image_repository.update(image_id, update_data)

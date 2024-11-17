@@ -67,7 +67,7 @@ class MixinImageProcessingLogOutput(CommonOutput):
 
     def model_dump(self):
         data = super().model_dump()
-        data['status'] = ImageProcessingType(data['status'])
+        data['status'] = ImageProcessingType(data['status']) if data['status'] else None
         data['processing_log'] = [ProcessingLogOutput(**log).model_dump() for log in data['processing_log']]
         return data
 

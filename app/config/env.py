@@ -7,7 +7,7 @@ class EnvironmentContainer(BaseSettings):
     AWS_DEFAULT_REGION: str
     DB_URL: str
     BUCKET_NAME: str
-    
+
     model_config = SettingsConfigDict(env_file='.env', case_sensitive=False)
 
 

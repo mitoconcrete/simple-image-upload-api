@@ -7,7 +7,7 @@ from app.util.s3_uploder import S3Uploader
 class TestS3Uploader:
     @pytest.fixture(scope='class', autouse=True)
     def bucket_name(self) -> str:
-        return 'th.kim-test-bucket'
+        return 'th.kim.test.bucket'
 
     @pytest.fixture(scope='class', autouse=True)
     def s3_uploader(self) -> S3Uploader:
