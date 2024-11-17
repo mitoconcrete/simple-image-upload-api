@@ -36,17 +36,20 @@ class TestImageRouter:
             ]
             client.post('/api/v1/images', files=files)
 
-            # offset, limit을 이용하여 페이징을 테스트합니다.
-            page1_response = client.get('/api/v1/images?offset=0&limit=2')
+            # page, limit을 이용하여 페이징을 테스트합니다.
+            page1_response = client.get('/api/v1/images?page=0&limit=2')
             assert page1_response.status_code == 200
+            assert page1_response.json()['total'] == 3
             assert len(page1_response.json()['items']) == 2
 
-            page2_response = client.get('/api/v1/images?offset=1&limit=2')
+            page2_response = client.get('/api/v1/images?page=1&limit=2')
             assert page2_response.status_code == 200
+            assert page1_response.json()['total'] == 3
             assert len(page2_response.json()['items']) == 1
 
-            page3_response = client.get('/api/v1/images?offset=2&limit=2')
+            page3_response = client.get('/api/v1/images?page=2&limit=2')
             assert page3_response.status_code == 200
+            assert page1_response.json()['total'] == 3
             assert len(page3_response.json()['items']) == 0
 
     def test_post_image(self, client: TestClient):
