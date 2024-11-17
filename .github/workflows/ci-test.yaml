@@ -18,11 +18,14 @@ jobs:
           echo "AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY" >> .env
           echo "AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION" >> .env
           echo "DB_URL=$DB_URL" >> .env
+          echo "BUCKET_NAME=$BUCKET_NAME" >> .env
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
           DB_URL: ${{ secrets.DB_URL }}
+          BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
+
 
       - name: Set up Python
         uses: actions/setup-python@v2
