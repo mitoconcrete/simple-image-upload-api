@@ -53,12 +53,6 @@
 #     return get_image_type(image)
 
 
-# def _get_save_path(image_type: str) -> str:
-#     # 이미지타입/날짜/타입스탬프-난수(5자리)-난수(3자리)-난수(1자리).확장자
-#     file_name = f'{datetime.now().strftime("%Y%m%d%H%M%S")}-{random.randint(10000, 99999)}-{random.randint(100, 999)}-{random.randint(0, 9)}'
-#     return f'{image_type.upper()}/{datetime.now().strftime("%Y%m%d")}/{file_name}.{image_type}'
-
-
 # def _save_processing_log(original_id: uuid.UUID, status: ImageProcessingType, description: str) -> None:
 #     image_repository.add_processing_log(original_id, ProcessingLog(status=status, description=description))
 

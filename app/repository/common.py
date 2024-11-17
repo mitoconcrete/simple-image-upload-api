@@ -36,9 +36,11 @@ class BaseRepository(ABC, Generic[T, InputDAO, OutputDAO]):
         return [self._convert_to_output(model) for model in models]
 
     def update(self, id: UUID4, data: InputDAO) -> Optional[OutputDAO]:
-        self.session.query(self.model).filter_by(id=id).update(data.model_dump(), synchronize_session='fetch')
-        self.session.commit()
-        updated_model = self.session.query(self.model).filter_by(id=id).first()
+        filtered_data = {k: v for k, v in data.model_dump().items() if v is not None}
+        if filtered_data:
+            self.session.query(self.model).filter_by(id=id).update(filtered_data, synchronize_session='fetch')
+            self.session.commit()
+        updated_model = self.get(id)
         return self._convert_to_output(updated_model) if updated_model else None
 
     def delete(self, id: UUID4) -> None:

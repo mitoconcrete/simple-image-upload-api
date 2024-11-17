@@ -12,14 +12,12 @@ database related input schema
 
 
 class ImageInput(CommonInput):
-    original_url: str
+    original_url: Optional[str] = None
     svg_url: Optional[str] = None
-    label: Optional[str] = None
 
 
 class ProcessingLogInput(CommonInput):
     status: ImageProcessingType
-    description: Optional[str] = None
 
     def model_dump(self):
         data = super().model_dump()
@@ -36,7 +34,6 @@ class ProcessingLogOutput(CommonOutput):
     id: UUID4
     original_id: UUID4
     status: ImageProcessingType
-    description: Optional[str] = None
     created_at: datetime
 
     def model_dump(self):
@@ -49,7 +46,6 @@ class ImageOutput(CommonOutput):
     id: UUID4
     original_url: str
     svg_url: Optional[str] = None
-    label: Optional[str] = None
     processing_log: list[ProcessingLogOutput] = []
     created_at: datetime
     updated_at: datetime
@@ -65,6 +61,7 @@ class MixinImageProcessingLogOutput(CommonOutput):
     original_url: str
     svg_url: Optional[str] = None
     status: Optional[ImageProcessingType] = None
+    processing_log: list[ProcessingLogOutput] = []
     created_at: datetime
     updated_at: datetime
 

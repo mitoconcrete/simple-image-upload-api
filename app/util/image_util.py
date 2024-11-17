@@ -1,3 +1,5 @@
+import random
+from datetime import datetime
 from io import BytesIO, StringIO
 
 import cv2
@@ -87,3 +89,9 @@ def process_image(image_data: bytes) -> bytes:
     svg_data = convert_image_to_svg(image_data)
     optimized_svg_data = optimize_svg(svg_data)
     return optimized_svg_data
+
+
+def create_save_path(image_type: str) -> str:
+    # 이미지타입/날짜/타입스탬프-난수(5자리)-난수(3자리)-난수(1자리).확장자
+    file_name = f'{datetime.now().strftime("%Y%m%d%H%M%S")}-{random.randint(10000, 99999)}-{random.randint(100, 999)}-{random.randint(0, 9)}'
+    return f'{image_type.upper()}/{datetime.now().strftime("%Y%m%d")}/{file_name}.{image_type}'
