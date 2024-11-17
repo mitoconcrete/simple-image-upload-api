@@ -8,6 +8,7 @@ from app.util.image_util import (
     convert_image_to_svg as _image_to_svg,
 )
 from app.util.image_util import (
+    create_save_path,
     get_image_size,
 )
 from app.util.image_util import (
@@ -91,3 +92,19 @@ class TestImageTools:
             image_data = f.read()
             image_size = get_image_size(image_data)
             assert image_size < 5 * 1024 * 1024
+
+    def test_create_save_path(self):
+        jpg_path = create_save_path('jpg')
+        jpeg_path = create_save_path('jpeg')
+        png_path = create_save_path('png')
+        svg_path = create_save_path('svg')
+
+        assert jpg_path.startswith('JPG')
+        assert jpeg_path.startswith('JPEG')
+        assert png_path.startswith('PNG')
+        assert svg_path.startswith('SVG')
+
+        assert jpg_path.endswith('.jpg')
+        assert jpeg_path.endswith('.jpeg')
+        assert png_path.endswith('.png')
+        assert svg_path.endswith('.svg')
