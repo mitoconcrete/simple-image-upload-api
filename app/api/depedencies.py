@@ -1,5 +1,5 @@
 from fastapi import Depends
-from pytest import Session
+from sqlalchemy.orm import Session
 
 from app.config.database import get_db
 from app.model.image import Image, ProcessingLog
