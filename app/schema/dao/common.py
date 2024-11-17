@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class CommonInput(BaseModel):
@@ -6,4 +6,4 @@ class CommonInput(BaseModel):
 
 
 class CommonOutput(BaseModel):
-    model_config = {'from_attributes': True}
+    model_config = ConfigDict(from_attributes=True)

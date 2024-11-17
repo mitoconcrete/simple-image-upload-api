@@ -1,5 +1,6 @@
 from typing import Optional
 
+from app.config.env import env
 from app.exception.image import (
     NotSupportedTypeException,
     OutOfAllowedCountException,
@@ -17,7 +18,6 @@ from app.util.helper import exception_handler
 from app.util.image_util import get_image_size, is_jpg_or_png, preprocess_image, process_image
 from app.util.s3_uploder import S3Uploader
 
-BUCKET_NAME = 'tk.asset.image'
 MAXIMUM_IMAGE_SIZE = 1024 * 1024 * 5  # 5MB
 MAX_ALLOWED_IMAGE_COUNT = 3
 
@@ -55,8 +55,8 @@ class ImageService:
     @exception_handler(UploadException)
     def upload(self, name: str, image: bytes) -> str:
         s3_uploader = S3Uploader()
-        s3_uploader.create_bucket(BUCKET_NAME)
-        return s3_uploader.upload_file(BUCKET_NAME, name, image)
+        s3_uploader.create_bucket(env.BUCKET_NAME)
+        return s3_uploader.upload_file(env.BUCKET_NAME, name, image)
 
     @exception_handler(SaveException)
     def save(self, upload_url) -> ImageServiceOutput:

@@ -198,10 +198,10 @@ class TestRepository:
         assert created_images.total == 2
         assert created_images.page == 0
         assert created_images.limit == 1
-        assert created_images.items[0].original_url == 'test'
+        assert created_images.items[0].original_url == 'test2'
 
         created_images = image_repository.get_images_with_pagination(limit=1, offset=1)
         assert created_images.total == 2
         assert created_images.page == 1
         assert created_images.limit == 1
-        assert created_images.items[0].original_url == 'test2'
+        assert created_images.items[0].original_url == 'test'

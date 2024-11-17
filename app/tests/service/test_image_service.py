@@ -277,3 +277,9 @@ class TestImageService:
             assert result.total == 3
             assert result.page == 1
             assert len(result.items) == 1
+
+            # limit 2, offset 2
+            result = image_service.get_all(2, 2)
+            assert result.total == 3
+            assert result.page == 2
+            assert len(result.items) == 0

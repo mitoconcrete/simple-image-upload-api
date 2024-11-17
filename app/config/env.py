@@ -6,6 +6,7 @@ class EnvironmentContainer(BaseSettings):
     AWS_SECRET_ACCESS_KEY: str
     AWS_DEFAULT_REGION: str
     DB_URL: str
+    BUCKET_NAME: str
 
     class Config:
         env_file = '.env'
