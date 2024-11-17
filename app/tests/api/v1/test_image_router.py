@@ -1,8 +1,10 @@
+import uuid
+
 import pytest
 from fastapi.testclient import TestClient
 
+from app.schema.enum.exception import ErrorType
 from app.tests.helper import create_test_image, create_test_text, delete_test_image, delete_test_text
-from app.util.contants import MAX_ALLOWED_IMAGE_COUNT, MAXIMUM_IMAGE_SIZE
 
 
 class TestImageRouter:
@@ -24,6 +26,12 @@ class TestImageRouter:
 
             assert get_response.status_code == 200
             assert set(get_response.json().keys()) == {'id', 'original_url', 'svg_url', 'status', 'created_at'}
+
+    def test_get_image_fail_not_found(self, client: TestClient):
+        response = client.get(f'/api/v1/images/{uuid.uuid4()}')
+        assert response.status_code == 404
+        assert response.json()['error_code'] == ErrorType.CONTENTS_NOT_FOUND.value[0]
+        assert response.json()['message'] == ErrorType.CONTENTS_NOT_FOUND.value[1]
 
     def test_get_images(self, client: TestClient):
         # 3개의 이미지를 multipart/form-data로 한번에 전송합니다.
@@ -69,7 +77,8 @@ class TestImageRouter:
 
             response = client.post('/api/v1/images', files=files)
             assert response.status_code == 400
-            assert response.json() == {'message': 'The image type should be jpg or png'}
+            assert response.json()['error_code'] == ErrorType.INVALID_IMAGE_TYPE.value[0]
+            assert response.json()['message'] == ErrorType.INVALID_IMAGE_TYPE.value[1]
 
     def test_post_image_fail_invalid_image_size(self, client: TestClient, monkeypatch):
         monkeypatch.setattr('app.service.image.MAXIMUM_IMAGE_SIZE', 1024)
@@ -80,7 +89,8 @@ class TestImageRouter:
 
             response = client.post('/api/v1/images', files=files)
             assert response.status_code == 400
-            assert response.json() == {'message': f'The image size should be less than {MAXIMUM_IMAGE_SIZE} bytes'}
+            assert response.json()['error_code'] == ErrorType.INVALID_IMAGE_SIZE.value[0]
+            assert response.json()['message'] == ErrorType.INVALID_IMAGE_SIZE.value[1]
 
     def test_post_image_fail_invalid_image_count(self, client: TestClient):
         with open('app/tests/util/test_image.jpg', 'rb') as f:
@@ -95,4 +105,5 @@ class TestImageRouter:
 
             response = client.post('/api/v1/images', files=files)
             assert response.status_code == 400
-            assert response.json() == {'message': f'The number of images should be less than {MAX_ALLOWED_IMAGE_COUNT}'}
+            assert response.json()['error_code'] == ErrorType.OUT_OF_ALLOWED_MAXIMUM_COUNT.value[0]
+            assert response.json()['message'] == ErrorType.OUT_OF_ALLOWED_MAXIMUM_COUNT.value[1]

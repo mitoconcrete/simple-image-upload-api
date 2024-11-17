@@ -2,6 +2,7 @@ from typing import Optional
 
 from app.config.env import env
 from app.exception.image import (
+    ContentsNotFoundException,
     ImageServiceException,
     NotSupportedTypeException,
     OutOfAllowedCountException,
@@ -15,6 +16,7 @@ from app.model.image import Image, ProcessingLog
 from app.repository.image import ImageRepository, ProcessingLogRepository
 from app.schema.dao.image import ImageInput
 from app.schema.dto.image import ImageServiceOutput, ImageServicePaginationOutput, SaveLogInput
+from app.schema.enum.exception import ErrorType
 from app.util.contants import MAX_ALLOWED_IMAGE_COUNT, MAXIMUM_IMAGE_SIZE
 from app.util.helper import exception_handler
 from app.util.image_util import get_image_size, is_jpg_or_png, preprocess_image, process_image
@@ -31,16 +33,19 @@ class ImageService:
         self.processing_log_repository = processing_log_repository
 
     def validate(self, images: list[bytes]) -> bool:
+        if not images:
+            raise OutOfAllowedCountException(ErrorType.OUT_OF_ALLOWED_MINIMUM_COUNT)
+
         if len(images) > MAX_ALLOWED_IMAGE_COUNT:
-            raise OutOfAllowedCountException('The number of images should be less than 3')
+            raise OutOfAllowedCountException(ErrorType.OUT_OF_ALLOWED_MAXIMUM_COUNT)
 
         # 이미지 중 하나라도 예외가 발생하면 바로 예외를 발생시키고, 모두 통과하면 True를 반환합니다.
         for image in images:
             if not is_jpg_or_png(image):
-                raise NotSupportedTypeException('The image type should be jpg or png')
+                raise NotSupportedTypeException(ErrorType.INVALID_IMAGE_TYPE)
 
             if get_image_size(image) > MAXIMUM_IMAGE_SIZE:
-                raise OutOfAllowedSizeException(f'The image size should be less than {MAXIMUM_IMAGE_SIZE} bytes')
+                raise OutOfAllowedSizeException(ErrorType.INVALID_IMAGE_SIZE)
         return True
 
     @exception_handler(PreProcessImageException)
@@ -71,6 +76,8 @@ class ImageService:
     @exception_handler(ImageServiceException)
     def get(self, image_id: str) -> Optional[ImageServiceOutput | None]:
         latest_image = self.image_repository.get_latest_image(image_id)
+        if not latest_image:
+            raise ContentsNotFoundException(ErrorType.CONTENTS_NOT_FOUND)
         return ImageServiceOutput(**latest_image.model_dump())
 
     @exception_handler(ImageServiceException)

@@ -1,6 +1,9 @@
+import uuid
+
 import pytest
 
 from app.exception.image import (
+    ContentsNotFoundException,
     NotSupportedTypeException,
     OutOfAllowedCountException,
     OutOfAllowedSizeException,
@@ -76,6 +79,11 @@ class TestImageService:
             payload = [bytes_image, bytes_image, bytes_image, bytes_image]
             with pytest.raises(OutOfAllowedCountException):
                 image_service.validate(payload)
+
+    def test_check_image_count_zero_fail(self, image_service: ImageService):
+        payload = []
+        with pytest.raises(OutOfAllowedCountException):
+            image_service.validate(payload)
 
     def test_image_service_preprocessing_success(self, image_service: ImageService):
         with open('app/tests/util/test_image.jpg', 'rb') as f:
@@ -263,3 +271,7 @@ class TestImageService:
             assert result.total == 3
             assert result.page == 2
             assert len(result.items) == 0
+
+    def test_image_service_get_fail(self, image_service: ImageService):
+        with pytest.raises(ContentsNotFoundException):
+            image_service.get(uuid.uuid4())
