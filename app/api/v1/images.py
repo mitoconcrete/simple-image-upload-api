@@ -4,7 +4,13 @@ from fastapi import APIRouter, Depends, File, UploadFile
 from pydantic import UUID4
 
 from app.api.depedencies import get_image_service
-from app.schema.dto.image import GetImageResponse, GetImagesResponse, ImageServiceOutput, SaveLogInput, UploadImageResponse
+from app.schema.dto.image import (
+    GetImageResponse,
+    GetImagesResponse,
+    ImageServiceOutput,
+    SaveLogInput,
+    UploadImageResponse,
+)
 from app.schema.enum.image import ImageProcessingType
 from app.service.image import ImageService
 from app.tasks.image import process_image_task

@@ -15,6 +15,7 @@ from app.util.image_util import create_save_path
 
 celery = Celery('tasks', broker=env.MESSAGES_BROKER_URL)
 
+
 @celery.task(ignore_result=True, name='이미지를 svg로 변환하는 작업')
 def process_image_task(original_id: UUID4, image_bytes: bytes):
     image_repo = ImageRepository(next(get_db()), Image, ImageOutput)
