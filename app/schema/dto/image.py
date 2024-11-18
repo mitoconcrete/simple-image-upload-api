@@ -23,11 +23,6 @@ class ImageServiceOutput(BaseModel):
     created_at: datetime
     updated_at: datetime
 
-    def model_dump(self):
-        data = super().model_dump()
-        data['status'] = data['status'].value if data.get('status') else None
-        return data
-
 
 class ImageServicePaginationOutput(BaseModel):
     total: int

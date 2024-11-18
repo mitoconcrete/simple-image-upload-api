@@ -63,7 +63,7 @@ class ImageService:
         return s3_uploader.upload_file(env.BUCKET_NAME, name, image)
 
     @exception_handler(SaveException)
-    def save(self, upload_url) -> ImageServiceOutput:
+    def save(self, upload_url: str) -> ImageServiceOutput:
         new_image = Image(original_url=upload_url)
         save_result = self.image_repository.add(new_image)
         return ImageServiceOutput(**save_result.model_dump())

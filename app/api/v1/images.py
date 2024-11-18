@@ -4,8 +4,10 @@ from fastapi import APIRouter, Depends, File, UploadFile
 from pydantic import UUID4
 
 from app.api.depedencies import get_image_service
-from app.schema.dto.image import GetImageResponse, GetImagesResponse, UploadImageResponse
+from app.schema.dto.image import GetImageResponse, GetImagesResponse, ImageServiceOutput, SaveLogInput, UploadImageResponse
+from app.schema.enum.image import ImageProcessingType
 from app.service.image import ImageService
+from app.tasks.image import process_image_task
 from app.util.image_util import create_save_path, get_image_format
 
 router = APIRouter()
@@ -28,6 +30,17 @@ async def get_images(
     return GetImagesResponse(**service.get_all(limit, page).model_dump())
 
 
+def preprocess(service: ImageService, image_bytes: bytes) -> tuple[UUID4, bytes, ImageServiceOutput]:
+    preprocessed_image = service.preprocess(image_bytes)
+    preprocessed_filename = create_save_path(get_image_format(preprocessed_image))
+    original_url = service.upload(preprocessed_filename, preprocessed_image)
+    original_image_model = service.save(original_url)
+    original_id = original_image_model.id
+    service.save_log(SaveLogInput(original_id=original_id, status=ImageProcessingType.READY))
+    refresh_image_model = service.get(original_id)
+    return (original_id, preprocessed_image, refresh_image_model)
+
+
 @router.post('/', response_model=List[UploadImageResponse])
 async def upload_multiple_images(
     files: List[UploadFile] = File(...),
@@ -37,20 +50,14 @@ async def upload_multiple_images(
     # 1. validate images
     service.validate(images)
 
-    # 2. preprocess images
-    preprocessed_images = [service.preprocess(image) for image in images]
+    response: list[ImageServiceOutput] = []
 
-    # 3. upload and save original images
-    create_filenames = [(create_save_path(get_image_format(image)), image) for image in preprocessed_images]
-    original_urls = [(service.upload(name, image), image) for name, image in create_filenames]
-    original_ids = [(service.save(url).id, image) for url, image in original_urls]
-
-    # 4. process images
-    processed_images = [(original_id, service.process(image)) for original_id, image in original_ids]
-
-    # 5. upload and save processed images
-    create_filenames = [(original_id, create_save_path('svg'), image) for original_id, image in processed_images]
-    svg_urls = [(original_id, service.upload(name, image), image) for original_id, name, image in create_filenames]
-    response = [service.update(original_id, url) for original_id, url, _ in svg_urls]
+    for image in images:
+        # 2. image preprocessing
+        original_id, preprocessed_image, original_image_model = preprocess(service, image)
+        # 3. image processing send to task queue
+        process_image_task.apply_async(args=[original_id, preprocessed_image], ignore_result=True)
+        # 4. append response
+        response.append(original_image_model)
 
     return [UploadImageResponse(**item.model_dump()) for item in response]
