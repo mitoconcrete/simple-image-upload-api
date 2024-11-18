@@ -1,22 +1,54 @@
 version: "3"
 
 services:
-  imple-image-upload-api:
+  redis:
+    image: redis:6-alpine
+    hostname: redis
+    container_name: redis
+    restart: always
+    ports:
+      - "6379:6379"
+
+  server:
     image: simple-image-upload-api:latest
-    hostname: simple-image-upload-api
-    container_name: simple-image-upload-api
+    command: poetry run uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    hostname: server
+    container_name: server
     restart: always
     ports:
       - "8000:8000"
     volumes:
       - ./volume:/volume
-
+      - ./server.log:/log
     env_file:
       - .env
-
     healthcheck:
       test: []
       interval: 10m
       timeout: 30s
       retries: 3
       start_period: 10m
+
+  worker:
+    image: simple-image-upload-api:latest
+    command: poetry run celery -A app.tasks.image worker --loglevel=info
+    hostname: worker
+    container_name: worker
+    restart: always
+    volumes:
+      - ./volume:/volume
+      - ./worker.log:/log
+    env_file:
+      - .env
+    healthcheck:
+      test: []
+      interval: 10m
+      timeout: 30s
+      retries: 3
+      start_period: 10m
+    depends_on:
+      - server
+      - redis
+      
+volumes:
+  volume: 

@@ -15,10 +15,7 @@ ENV PATH="/root/.local/bin:${PATH}"
 
 COPY pyproject.toml /
 COPY poetry.lock /
-COPY ./app /app
+COPY app /app
 
 RUN poetry install --without dev
 RUN yes | poetry cache clear . --all
-
-ENTRYPOINT ["poetry", "run"]
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
